@@ -1,5 +1,6 @@
 // SPDX-Lisence-Identifier: MIT
 import "./Mytoken.sol";
+import "hardhat/console.sol";
 pragma solidity ^0.8.13;
 contract Hotel is MyToken{
     uint public counter;
@@ -15,7 +16,7 @@ contract Hotel is MyToken{
     }
 
     modifier costs(uint _amount) {
-        require(msg.value == _amount*(1 ether), "Invalid Money."); _;
+        require(msg.value == _amount, "Invalid Money."); _;
     }
 
     modifier MaxRooms {
@@ -24,9 +25,10 @@ contract Hotel is MyToken{
 
 
     uint accountBalance = address(this).balance;
-    receive() external payable costs(2) MaxRooms{ //receive : calldata없이 msg를 받을 때 동작하는 함수 (message ether)
+    receive() external payable costs(0.0001 ether) MaxRooms{ //receive : calldata없이 msg를 받을 때 동작하는 함수 (message ether)
+        console.log(msg.value);
         rooms[counter++] = Statuses.Occupied;
-        _mint(msg.sender,msg.value);
+        _mint(msg.sender,2*10**uint(decimals()));
         emit Occupy(msg.sender, msg.value);
     }
     function withdraw() public payable onlyOwner{
